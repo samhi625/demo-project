@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Online Quiz Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f2f2f2;
+    }
+
+    .container {
+      width: 60%;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .question {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+
+    .timer {
+      background: #ff4444;
+      color: white;
+      padding: 10px;
+      font-size: 20px;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: auto;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .leaderboard {
+      background: #eee;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Online Quiz Platform</h1>
+
+  <!-- TIMER -->
+  <div id="timer" class="timer">Time Left: 30 sec</div>
+
+  <!-- QUIZ QUESTIONS -->
+  <form id="quizForm">
+    <div class="question">
+      <h3>1. Which language is used for web styling?</h3>
+      <input type="radio" name="q1" value="CSS"> CSS <br>
+      <input type="radio" name="q1" value="Python"> Python <br>
+      <input type="radio" name="q1" value="C++"> C++ <br>
+    </div>
+
+    <div class="question">
+      <h3>2. HTML stands for?</h3>
+      <input type="text" name="q2" placeholder="Type your answer">
+    </div>
+
+    <div class="question">
+      <h3>3. JavaScript is a ___ language.</h3>
+      <input type="radio" name="q3" value="Programming"> Programming <br>
+      <input type="radio" name="q3" value="Markup"> Markup <br>
+    </div>
+
+    <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+  </form>
+
+  <!-- RESULT -->
+  <h2 id="result"></h2>
+
+  <!-- LEADERBOARD -->
+  <div class="leaderboard">
+    <h3>Leaderboard</h3>
+    <ul id="leaderboardList"></ul>
+  </div>
+
+</div>
+
+<script>
+  let timeLeft = 30;
+
+  // TIMER COUNTDOWN
+  let timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerHTML = "Time Left: " + timeLeft + " sec";
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      submitQuiz();
+    }
+  }, 1000);
+
+  // SUBMIT QUIZ LOGIC
+  function submitQuiz() {
+    clearInterval(timer);
+
+    let form = document.forms["quizForm"];
+    let score = 0;
+
+    if (form["q1"].value === "CSS") score += 1;
+    if (form["q2"].value.trim().toLowerCase() === "hyper text markup language") score += 1;
+    if (form["q3"].value === "Programming") score += 1;
+
+    document.getElementById("result").innerHTML = "Your Score: " + score + "/3";
+
+    saveToLeaderboard(score);
+    displayLeaderboard();
+  }
+
+  // SAVE SCORE TO LEADERBOARD
+  function saveToLeaderboard(score) {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+    leaderboard.push(score);
+    leaderboard.sort((a, b) => b - a);
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  }
+
+  // DISPLAY LEADERBOARD
+  function displayLeaderboard() {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+    let list = document.getElementById("leaderboardList");
+    list.innerHTML = "";
+
+    leaderboard.slice(0, 5).forEach((score, index) => {
+      let li = document.createElement("li");
+      li.textContent = `Rank ${index + 1}: ${score} points`;
+      list.appendChild(li);
+    });
+  }
+
+  displayLeaderboard();
+</script>
+
+</body>
+</html>
